@@ -51,6 +51,7 @@ public class Categoria {
         return null;
     }
 
+<<<<<<< HEAD
     public static void actualizarCategoria(ArrayList<Categoria> categorias, Categoria categoria, ArrayList<Pelicula> peliculas) throws CategoriaUsoException {
         for (int i = 0; i < categorias.size(); i++) {
             if (categorias.get(i).getCodigo().equals(categoria.getCodigo())) {
@@ -59,6 +60,13 @@ public class Categoria {
                 }
                 categorias.set(i, categoria);
                 return;
+=======
+    public static void actualizarCategoria(ArrayList<Categoria> categorias, Categoria categoria) {
+        for (int i = 0; i < categorias.size(); i++) {
+            if (categorias.get(i).getCodigo().equals(categoria.getCodigo())) {
+                categorias.set(i, categoria);
+                break;
+>>>>>>> origin/editable
             }
         }
     }
@@ -67,7 +75,11 @@ public class Categoria {
         for (int i = 0; i < categorias.size(); i++) {
             Categoria categoria = categorias.get(i);
             if (categoria.getCodigo().equals(codigo)) {
+<<<<<<< HEAD
                 if (categoriaUso(categoria, peliculas)) {
+=======
+                if (categoriaEnUso(categoria, peliculas)) {
+>>>>>>> origin/editable
                     throw new CategoriaUsoException();
                 }
 
@@ -77,7 +89,11 @@ public class Categoria {
         }
     }
 
+<<<<<<< HEAD
     private static boolean categoriaUso(Categoria categoria, ArrayList<Pelicula> peliculas) {
+=======
+    private static boolean categoriaEnUso(Categoria categoria, ArrayList<Pelicula> peliculas) {
+>>>>>>> origin/editable
         for (Pelicula pelicula : peliculas) {
             if (pelicula.getCategoria().equals(categoria)) {
                 return true;
