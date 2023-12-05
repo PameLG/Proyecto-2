@@ -51,11 +51,14 @@ public class Categoria {
         return null;
     }
 
-    public static void actualizarCategoria(ArrayList<Categoria> categorias, Categoria categoria) {
+    public static void actualizarCategoria(ArrayList<Categoria> categorias, Categoria categoria, ArrayList<Pelicula> peliculas) throws CategoriaUsoException {
         for (int i = 0; i < categorias.size(); i++) {
             if (categorias.get(i).getCodigo().equals(categoria.getCodigo())) {
+                if (categoriaUso(categoria, peliculas)) {
+                    throw new CategoriaUsoException();
+                }
                 categorias.set(i, categoria);
-                break;
+                return;
             }
         }
     }
@@ -64,7 +67,7 @@ public class Categoria {
         for (int i = 0; i < categorias.size(); i++) {
             Categoria categoria = categorias.get(i);
             if (categoria.getCodigo().equals(codigo)) {
-                if (categoriaEnUso(categoria, peliculas)) {
+                if (categoriaUso(categoria, peliculas)) {
                     throw new CategoriaUsoException();
                 }
 
@@ -74,7 +77,7 @@ public class Categoria {
         }
     }
 
-    private static boolean categoriaEnUso(Categoria categoria, ArrayList<Pelicula> peliculas) {
+    private static boolean categoriaUso(Categoria categoria, ArrayList<Pelicula> peliculas) {
         for (Pelicula pelicula : peliculas) {
             if (pelicula.getCategoria().equals(categoria)) {
                 return true;
