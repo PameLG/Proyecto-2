@@ -1,9 +1,5 @@
 package GesVideoClub;
 
-/**
- *
- * @author gollo
- */
 public class FaltaDaException extends Exception {
 
     public FaltaDaException() {

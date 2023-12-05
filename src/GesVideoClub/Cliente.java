@@ -21,6 +21,14 @@ public class Cliente {
         this.direccion = direccion;
     }
 
+    public Cliente(String nombre, String fechaNacimiento, String telefono, String correo, String direccion) {
+        this.nombre = nombre;
+        this.fechaNacimiento = fechaNacimiento;
+        this.telefono = telefono;
+        this.correo = correo;
+        this.direccion = direccion;
+    }
+
     public String getCedula() {
         return cedula;
     }
@@ -77,14 +85,14 @@ public class Cliente {
         clientes.add(cliente);
     }
 
-    public Cliente buscarCliente(ArrayList<Cliente> clientes, String cedula) {
-        for (Cliente cliente : clientes) {
-            if (cliente.getCedula().equals(cedula)) {
-                return cliente;
-            }
+ public Cliente buscarCliente(ArrayList<Cliente> clientes, String cedula) {
+    for (Cliente cliente : clientes) {
+        if (cliente.getCedula().equals(cedula)) {
+            return cliente;
         }
-        return null;
     }
+    return null;
+}
 
     public void actualizarCliente(ArrayList<Cliente> clientes, Cliente cliente) {
         for (int i = 0; i < clientes.size(); i++) {

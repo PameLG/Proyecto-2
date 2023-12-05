@@ -1,13 +1,23 @@
 
 package GesVideoClub;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import javax.swing.JOptionPane;
+import javax.swing.DefaultListModel;
+
+
 public class Clientes extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Clientes
-     */
+    private DefaultListModel<String> clientesListModel = new DefaultListModel<>();
+     private ArrayList<Cliente> listaClientes = new ArrayList<>();
+     private ArrayList<Prestamo> listaPrestamos = new ArrayList<>();
+
+
+    
     public Clientes() {
         initComponents();
+        clientesList.setModel(clientesListModel);
     }
 
     /**
@@ -222,9 +232,20 @@ public class Clientes extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+private void actualizarListaClientes() {
+    clientesListModel.clear(); 
 
+    for (Cliente cliente : listaClientes) {
+        clientesListModel.addElement(cliente.getNombre() + " - " + cliente.getCedula());
+    }
+}
     private void buscarBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscarBActionPerformed
-        // TODO add your handling code here:
+   String cedula = cedulaTxt.getText();
+    Cliente clienteEncontrado = buscarCliente(listaClientes, cedula);
+    if (clienteEncontrado != null) {
+    } else {
+        JOptionPane.showMessageDialog(this, "Cliente no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_buscarBActionPerformed
 
     private void FeNaciTxtxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FeNaciTxtxActionPerformed
@@ -236,15 +257,66 @@ public class Clientes extends javax.swing.JFrame {
     }//GEN-LAST:event_correoTxTActionPerformed
 
     private void agregarBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agregarBActionPerformed
-        // TODO add your handling code here:
+     String cedula = cedulaTxt.getText();
+    String nombre = nombreTXT.getText();
+    String fechaNacimiento = FeNaciTxtx.getText();
+    String telefono = telefonoTxT.getText();
+    String correo = correoTxT.getText();
+    String direccion = dirrecionTxt.getText();
+
+    if (cedula.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "La cédula es obligatoria", "Error", JOptionPane.ERROR_MESSAGE);
+        return;  
+    }
+
+    Cliente nuevoCliente = new Cliente(cedula, nombre, fechaNacimiento, telefono, correo, direccion);
+
+    try {
+        nuevoCliente.agregarCliente(listaClientes, nuevoCliente);
+    } catch (FaltaDaException e) {
+        JOptionPane.showMessageDialog(this, "Error al agregar el cliente: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    actualizarListaClientes();
+
     }//GEN-LAST:event_agregarBActionPerformed
 
     private void eliminarBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarBActionPerformed
-        // TODO add your handling code here:
+         String cedula = cedulaTxt.getText();
+
+    Cliente clienteEncontrado = buscarCliente(listaClientes, cedula);
+    if (clienteEncontrado != null) {
+        try {
+            eliminarCliente(listaClientes, listaPrestamos, cedula);
+        } catch (ClienteAsoException e) {
+            JOptionPane.showMessageDialog(this, "Error al eliminar el cliente: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+           }
+    } else {
+       
+    }
+
+    actualizarListaClientes();
     }//GEN-LAST:event_eliminarBActionPerformed
 
     private void actualizarBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actualizarBActionPerformed
-        // TODO add your handling code here:
+      String cedula = cedulaTxt.getText();
+    String nombre = nombreTXT.getText();
+    String fechaNacimiento = FeNaciTxtx.getText();
+    String telefono = telefonoTxT.getText();
+    String correo = correoTxT.getText();
+    String direccion = dirrecionTxt.getText();
+
+    Cliente clienteActualizado = new Cliente(cedula, nombre, fechaNacimiento, telefono, correo, direccion);
+
+    Cliente clienteEncontrado = buscarCliente(listaClientes, cedula);
+    if (clienteEncontrado != null) {
+        clienteActualizado.actualizarCliente(listaClientes, clienteActualizado);
+    } else {
+        
+    }
+
+    actualizarListaClientes();
+
     }//GEN-LAST:event_actualizarBActionPerformed
 
     private void dirrecionTxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dirrecionTxtActionPerformed
@@ -262,6 +334,65 @@ public class Clientes extends javax.swing.JFrame {
     private void telefonoTxTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_telefonoTxTActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_telefonoTxTActionPerformed
+  public void agregarCliente(ArrayList<Cliente> clientes, Cliente cliente) throws FaltaDaException {
+        if (cliente == null || cliente.getCedula() == null || cliente.getNombre() == null || cliente.getFechaNacimiento() == null
+                || cliente.getTelefono() == null || cliente.getCorreo() == null || cliente.getDireccion() == null) {
+            throw new FaltaDaException();
+        }
+        clientes.add(cliente);
+    }
+
+ public Cliente buscarCliente(ArrayList<Cliente> clientes, String cedula) {
+    for (Cliente cliente : clientes) {
+        if (cliente.getCedula().equals(cedula)) {
+            return cliente;
+        }
+    }
+    return null;
+}
+
+    public void actualizarCliente(ArrayList<Cliente> clientes, Cliente cliente) {
+        for (int i = 0; i < clientes.size(); i++) {
+            if (clientes.get(i).getCedula().equals(cliente.getCedula())) {
+                clientes.set(i, cliente);
+                break;
+            }
+        }
+    }
+
+    public void eliminarCliente(ArrayList<Cliente> clientes, ArrayList<Prestamo> prestamos, String cedula) throws ClienteAsoException {
+        if (clienteEnUso(prestamos)) {
+            throw new ClienteAsoException();
+        }
+
+        for (int i = 0; i < clientes.size(); i++) {
+            if (clientes.get(i).getCedula().equals(cedula)) {
+                clientes.remove(i);
+                break;
+            }
+        }
+    }
+
+    private boolean clienteEnUso(ArrayList<Prestamo> prestamos) {
+        for (Prestamo prestamo : prestamos) {
+            if (prestamo.getCliente().equals(this)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void verificarClienteDupli(HashSet<String> clientesDupli) throws InfoDuplicadaException {
+        if (clientesDupli.contains(this.getCedula())) {
+            throw new InfoDuplicadaException();
+        } else {
+            clientesDupli.add(this.getCedula());
+        }
+    }
+
+    public void agregarClienteS(HashSet<String> clientesDupli) {
+        clientesDupli.add(this.getCedula());
+    }
 
     /**
      * @param args the command line arguments
@@ -319,4 +450,8 @@ public class Clientes extends javax.swing.JFrame {
     private javax.swing.JLabel telefonoCli;
     private javax.swing.JTextField telefonoTxT;
     // End of variables declaration//GEN-END:variables
+
+   
+   
+
 }
